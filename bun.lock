@@ -66,6 +66,7 @@
       },
       "devDependencies": {
         "@types/bun": "latest",
+        "typescript": "^5.9.3",
         "ulid": "^3.0.2",
       },
     },
@@ -359,6 +360,8 @@
 
     "@drsmile1001/entity-store/@sinclair/typebox": ["@sinclair/typebox@0.34.48", "", {}, "sha512-kKJTNuK3AQOrgjjotVxMrCn1sUJwM76wMszfq1kdU4uYVJjvEWuFQ6HgvLt4Xz3fSmZlTOxJ/Ie13KnIcWQXFA=="],
 
+    "@drsmile1001/entity-store/@types/bun": ["@types/bun@1.3.11", "", { "dependencies": { "bun-types": "1.3.11" } }, "sha512-5vPne5QvtpjGpsGYXiFyycfpDF2ECyPcTSsFBMa0fraoxiQyMJ3SmuQIGhzPg2WJuWxVBoxWJ2kClYTcw/4fAg=="],
+
     "@drsmile1001/event-bus-nats/@drsmile1001/logger": ["@drsmile1001/logger@1.0.0", "", { "dependencies": { "kleur": "^4.1.5", "rotating-file-stream": "^3.2.7" } }, "sha512-tCF0uCtHwesP4V5bQllEMHSaxZ3MJTzJyW4RAOsrtKHX28QwKJRgqG6yzcCZea5A6uDjKKprV4AV6cqzqxVqvg=="],
 
     "@drsmile1001/plugin-loader/@drsmile1001/logger": ["@drsmile1001/logger@1.0.0", "", { "dependencies": { "kleur": "^4.1.5", "rotating-file-stream": "^3.2.7" } }, "sha512-tCF0uCtHwesP4V5bQllEMHSaxZ3MJTzJyW4RAOsrtKHX28QwKJRgqG6yzcCZea5A6uDjKKprV4AV6cqzqxVqvg=="],
@@ -367,6 +370,12 @@
 
     "@drsmile1001/service-map/@drsmile1001/logger": ["@drsmile1001/logger@1.0.0", "", { "dependencies": { "kleur": "^4.1.5", "rotating-file-stream": "^3.2.7" } }, "sha512-tCF0uCtHwesP4V5bQllEMHSaxZ3MJTzJyW4RAOsrtKHX28QwKJRgqG6yzcCZea5A6uDjKKprV4AV6cqzqxVqvg=="],
 
+    "@drsmile1001/utils/@types/bun": ["@types/bun@1.3.11", "", { "dependencies": { "bun-types": "1.3.11" } }, "sha512-5vPne5QvtpjGpsGYXiFyycfpDF2ECyPcTSsFBMa0fraoxiQyMJ3SmuQIGhzPg2WJuWxVBoxWJ2kClYTcw/4fAg=="],
+
     "@drsmile1001/utils-yaml/@drsmile1001/logger": ["@drsmile1001/logger@1.0.0", "", { "dependencies": { "kleur": "^4.1.5", "rotating-file-stream": "^3.2.7" } }, "sha512-tCF0uCtHwesP4V5bQllEMHSaxZ3MJTzJyW4RAOsrtKHX28QwKJRgqG6yzcCZea5A6uDjKKprV4AV6cqzqxVqvg=="],
+
+    "@drsmile1001/entity-store/@types/bun/bun-types": ["bun-types@1.3.11", "", { "dependencies": { "@types/node": "*" } }, "sha512-1KGPpoxQWl9f6wcZh57LvrPIInQMn2TQ7jsgxqpRzg+l0QPOFvJVH7HmvHo/AiPgwXy+/Thf6Ov3EdVn1vOabg=="],
+
+    "@drsmile1001/utils/@types/bun/bun-types": ["bun-types@1.3.11", "", { "dependencies": { "@types/node": "*" } }, "sha512-1KGPpoxQWl9f6wcZh57LvrPIInQMn2TQ7jsgxqpRzg+l0QPOFvJVH7HmvHo/AiPgwXy+/Thf6Ov3EdVn1vOabg=="],
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@drsmile1001/entity-store",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "dependencies": {
     "@drsmile1001/logger": "^1.0.0",
     "@drsmile1001/utils": "^1.0.0",
@@ -8,6 +8,7 @@
   },
   "devDependencies": {
     "@types/bun": "latest",
+    "typescript": "^5.9.3",
     "ulid": "^3.0.2"
   },
   "files": [

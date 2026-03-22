@@ -156,12 +156,12 @@ export class EntityStoreYaml<
     }
   }
 
-  list(): Static<TEntitySchema>[] {
-    return Array.from(this.cache.values());
+  list(): Promise<Static<TEntitySchema>[]> {
+    return Promise.resolve(Array.from(this.cache.values()));
   }
 
-  get(id: string): Static<TEntitySchema> | undefined {
-    return this.cache.get(id);
+  get(id: string): Promise<Static<TEntitySchema> | undefined> {
+    return Promise.resolve(this.cache.get(id));
   }
 
   async set(item: Static<TEntitySchema>): Promise<void> {
