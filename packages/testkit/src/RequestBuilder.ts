@@ -5,7 +5,14 @@ export class RequestBuilder {
   private path: string;
   private query: Record<string, string | string[]> = {};
   private cookies: Record<string, string> = {};
-  private body?: BodyInit | null | undefined;
+  private body?:
+    | ReadableStream
+    | Blob
+    | FormData
+    | URLSearchParams
+    | string
+    | null
+    | undefined;
   private contentType?: string | null = null;
 
   constructor(path: string) {
@@ -32,7 +39,16 @@ export class RequestBuilder {
     return this;
   }
 
-  withBody(body: BodyInit) {
+  withBody(
+    body:
+      | ReadableStream
+      | Blob
+      | FormData
+      | URLSearchParams
+      | string
+      | null
+      | undefined
+  ) {
     this.body = body;
     return this;
   }
