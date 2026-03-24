@@ -1,0 +1,21 @@
+{
+  "name": "@drsmile1001/record-processor",
+  "version": "1.0.0",
+  "module": "index.ts",
+  "types": "index.ts",
+  "files": [
+    "index.ts",
+    "src"
+  ],
+  "scripts": {
+    "typecheck": "bunx tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@drsmile1001/utils": "^1.0.0"
+  },
+  "devDependencies": {
+    "@drsmile1001/testkit": "^1.0.0",
+    "@types/bun": "^1.3.10"
+  },
+  "license": "MIT"
+}
