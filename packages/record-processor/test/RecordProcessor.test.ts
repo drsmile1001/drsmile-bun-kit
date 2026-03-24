@@ -7,30 +7,78 @@ import {
   type RecordDef,
   asNumber,
   asString,
+  checkInSet,
   checkUnique,
-  checkUniqueInScope,
   mapEnum,
   parseRecord,
   parseRecordList,
 } from "../index";
 
 type GenericRecord = {
-  key: string;
-  group: string;
+  id: string | null;
+  name: string;
   amount: number;
   mode: "AUTO" | "MANUAL";
-  alias: string;
 };
 
 function createDef(): RecordDef<GenericRecord> {
+  const existingIds = new Set(["u1", "u2"]);
+  const existingNames = new Set(["GlobalTaken", "ExistingName"]);
+  const existingIdNamePairs = new Set(["u1::ExistingName", "u2::NameForU2"]);
+
+  const checkCreateNameUnique = checkUnique<string>({
+    initSet: existingNames,
+  });
+  const checkUpdatePairUniqueInImport = checkUnique<string>();
+
+  const ensureUpdateNameUnique = (value: { id: string; name: string }) => {
+    const pairKey = `${value.id}::${value.name}`;
+    if (existingIdNamePairs.has(pairKey)) {
+      return ok(value);
+    }
+
+    const uniqueResult = checkUpdatePairUniqueInImport(pairKey);
+    if (!uniqueResult.ok) {
+      return err([
+        {
+          code: "DUPLICATE",
+          message: "同一 id 的 name 不可重複",
+        },
+      ]);
+    }
+
+    return ok(value);
+  };
+
+  const ensureCreateNameUnique = (value: { id: null; name: string }) => {
+    const uniqueResult = checkCreateNameUnique(value.name);
+    if (!uniqueResult.ok) {
+      return err([
+        {
+          code: "DUPLICATE",
+          message: "新增資料的 name 不可與整體重複",
+        },
+      ]);
+    }
+
+    return ok(value);
+  };
+
   return {
-    key: {
-      parser: Pipe.from(asString({ required: true }))
-        .check(checkUnique())
+    id: {
+      parser: Pipe.from(asString({ required: false }))
+        .ifNotNull(checkInSet({ set: existingIds }))
         .build(),
     },
-    group: {
+    name: {
       parser: asString({ required: true }),
+      postChecker: (value, c) => {
+        if (c.record.id) {
+          return ensureUpdateNameUnique({ id: c.record.id, name: value });
+        } else {
+          return ensureCreateNameUnique({ id: null, name: value });
+        }
+      },
     },
     amount: {
       parser: asNumber({ required: true, min: 0 }),
@@ -47,58 +95,53 @@ function createDef(): RecordDef<GenericRecord> {
         )
         .build(),
     },
-    alias: {
-      parser: asString({ required: true }),
-      postChecker: checkUniqueInScope({
-        getScope: (ctx) => ctx.record.group,
-      }),
-    },
   };
 }
 
 describe("RecordProcessor 整合測試", () => {
-  test("整合流程可解析單筆資料", async () => {
+  test("id-name 與既有資料完全一致時為合法，新增資料需全域唯一", async () => {
     const result = await parseRecord(createDef(), {
-      key: "K1",
-      group: "G1",
+      id: "u1",
+      name: "ExistingName",
       amount: "100",
       mode: "auto",
-      alias: "A1",
     });
 
     expect(result).toEqual(
       ok({
-        key: "K1",
-        group: "G1",
+        id: "u1",
+        name: "ExistingName",
         amount: 100,
         mode: "AUTO",
-        alias: "A1",
       })
     );
   });
 
-  test("整合流程在清單解析時回傳帶 index 的錯誤", async () => {
+  test("更新與新增規則衝突時，清單解析回傳帶 index 的錯誤", async () => {
     const result = await parseRecordList(createDef(), [
       {
-        key: "K1",
-        group: "G1",
+        id: "u1",
+        name: "ExistingName",
         amount: "100",
         mode: "auto",
-        alias: "A1",
       },
       {
-        key: "K1",
-        group: "G1",
+        id: "u1",
+        name: "NewForU1",
         amount: "50",
         mode: "manual",
-        alias: "A2",
       },
       {
-        key: "K3",
-        group: "G1",
+        id: "u1",
+        name: "NewForU1",
         amount: "20",
         mode: "manual",
-        alias: "A1",
+      },
+      {
+        id: "",
+        name: "GlobalTaken",
+        amount: "60",
+        mode: "auto",
       },
     ]);
 
@@ -106,38 +149,42 @@ describe("RecordProcessor 整合測試", () => {
       err({
         records: [
           {
-            key: "K1",
-            group: "G1",
+            id: "u1",
+            name: "ExistingName",
             amount: 100,
             mode: "AUTO",
-            alias: "A1",
           },
           {
-            group: "G1",
+            id: "u1",
+            name: "NewForU1",
             amount: 50,
             mode: "MANUAL",
-            alias: "A2",
           },
           {
-            key: "K3",
-            group: "G1",
+            id: "u1",
+            name: "NewForU1",
             amount: 20,
             mode: "MANUAL",
-            alias: "A1",
+          },
+          {
+            id: null,
+            name: "GlobalTaken",
+            amount: 60,
+            mode: "AUTO",
           },
         ],
         issues: [
           {
-            index: 1,
-            field: "key",
+            index: 2,
+            field: "name",
             code: "DUPLICATE",
-            message: "此值重複",
+            message: "同一 id 的 name 不可重複",
           },
           {
-            index: 2,
-            field: "alias",
+            index: 3,
+            field: "name",
             code: "DUPLICATE",
-            message: "此值在當前範圍內重複",
+            message: "新增資料的 name 不可與整體重複",
           },
         ],
       })

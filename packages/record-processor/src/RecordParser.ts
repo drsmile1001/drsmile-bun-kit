@@ -4,8 +4,8 @@ import type { ValueIssue, ValueProcessor } from "./ValueProcessor";
 
 export type RecordDef<TRecord extends Record<string, unknown>> = {
   [K in keyof TRecord]: {
-    parser: ValueProcessor<unknown, TRecord[K]>;
-    postChecker?: ValueProcessor<TRecord[K], TRecord[K], TRecord>;
+    parser: ValueProcessor<unknown, TRecord[K], Record<string, unknown>>;
+    postChecker?: ValueProcessor<TRecord[K], unknown, TRecord>;
   };
 };
 

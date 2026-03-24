@@ -6,16 +6,14 @@ export type ValueIssue = {
 };
 
 export type ValueProcessResult<TValue> = Result<TValue, ValueIssue[]>;
-export type ValueProcessContext<
-  TRecord extends Record<string, unknown> = Record<string, unknown>,
-> = {
+export type ValueProcessContext<TRecord extends Record<string, unknown>> = {
   record: TRecord;
 };
 
 export type ValueProcessor<
   TInput,
   TOutput,
-  TRecord extends Record<string, unknown> = Record<string, unknown>,
+  TRecord extends Record<string, unknown>,
 > = (
   value: TInput,
   ctx: ValueProcessContext<TRecord>

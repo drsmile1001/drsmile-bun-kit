@@ -143,7 +143,7 @@ export function checkUnique<T>(options?: {
 
 export function checkUniqueInScope<
   TValue,
-  TRecord extends Record<string, unknown> = Record<string, unknown>,
+  TRecord extends Record<string, unknown>,
 >(options: {
   getScope: (ctx: ValueProcessContext<TRecord>) => string;
 }): (
@@ -205,35 +205,5 @@ export function checkInSet<TValue>(options: {
       ]);
     }
     return ok(value);
-  };
-}
-
-export function pickFields<
-  TRecord extends Record<string, unknown> = Record<string, unknown>,
-  TField extends keyof TRecord = keyof TRecord,
->(options: {
-  fields: TField[];
-}): (
-  value: unknown,
-  ctx: ValueProcessContext<TRecord>
-) => Result<
-  {
-    [K in TField]: TRecord[K];
-  },
-  ValueIssue[]
-> {
-  return (_value: unknown, ctx: ValueProcessContext<TRecord>) => {
-    const result: Partial<{
-      [K in TField]: TRecord[K];
-    }> = {};
-    for (const field of options.fields) {
-      const fieldValue = ctx.record[field];
-      result[field] = fieldValue;
-    }
-    return ok(
-      result as {
-        [K in TField]: TRecord[K];
-      }
-    );
   };
 }

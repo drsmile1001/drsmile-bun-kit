@@ -101,4 +101,74 @@ describe("Pipe", () => {
     expect(await parser("  value ", { record: {} })).toEqual(ok("value"));
     expect(await parser(null, { record: {} })).toEqual(ok("fallback"));
   });
+
+  test("match + otherwise 可得到分支聯集型別並供 then 使用", async () => {
+    const parser = Pipe.from((value: unknown) => ok(value as "A" | "B" | "C"))
+      .match()
+      .when(
+        (value): value is "A" => value === "A",
+        () => ok(100)
+      )
+      .when(
+        (value): value is "B" => value === "B",
+        () => ok(true)
+      )
+      .otherwise(() => ok("fallback"))
+      .then((value) => {
+        if (typeof value === "number") {
+          return ok(`N:${value}`);
+        }
+        if (typeof value === "boolean") {
+          return ok(`B:${value}`);
+        }
+        return ok(`S:${value}`);
+      })
+      .build();
+
+    expect(await parser("A", { record: {} })).toEqual(ok("N:100"));
+    expect(await parser("B", { record: {} })).toEqual(ok("B:true"));
+    expect(await parser("C", { record: {} })).toEqual(ok("S:fallback"));
+  });
+
+  test("match 可用 exhaustive 建立嚴格分支", async () => {
+    const parser = Pipe.from((value: unknown) => ok(value as "A" | "B"))
+      .match()
+      .when(
+        (value): value is "A" => value === "A",
+        () => ok(1)
+      )
+      .when(
+        (value): value is "B" => value === "B",
+        () => ok(2)
+      )
+      .exhaustive()
+      .build();
+
+    expect(await parser("A", { record: {} })).toEqual(ok(1));
+    expect(await parser("B", { record: {} })).toEqual(ok(2));
+  });
+
+  test("exhaustive 在執行期未命中時回傳 NO_MATCH", async () => {
+    const parser = Pipe.from((value: unknown) => ok(value as "A" | "B"))
+      .match()
+      .when(
+        (value): value is "A" => value === "A",
+        () => ok(1)
+      )
+      .when(
+        (value): value is "B" => value === "B",
+        () => ok(2)
+      )
+      .exhaustive()
+      .build();
+
+    expect(await parser("C", { record: {} })).toEqual(
+      err([
+        {
+          code: "NO_MATCH",
+          message: "沒有符合條件的分支",
+        },
+      ])
+    );
+  });
 });

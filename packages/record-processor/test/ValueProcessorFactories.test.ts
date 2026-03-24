@@ -11,7 +11,6 @@ import {
   checkUniqueInScope,
   mapEnum,
   mapRef,
-  pickFields,
 } from "../src/ValueProcessorFactories";
 
 describe("ValueProcessorFactories", () => {
@@ -136,17 +135,5 @@ describe("ValueProcessorFactories", () => {
         },
       ])
     );
-  });
-
-  test("pickFields 可回傳 context record 的指定欄位", () => {
-    const picker = pickFields<{ a: number; b: string; c: boolean }, "a" | "c">({
-      fields: ["a", "c"],
-    });
-
-    expect(
-      picker(undefined, {
-        record: { a: 10, b: "x", c: true },
-      })
-    ).toEqual(ok({ a: 10, c: true }));
   });
 });
